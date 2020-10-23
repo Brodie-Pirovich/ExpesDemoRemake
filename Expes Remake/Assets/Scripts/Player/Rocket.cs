@@ -15,8 +15,7 @@ public class Rocket : MonoBehaviour
     private AudioSource audioSource;
     public AudioClip ExplosionSound;
 
-    [SerializeField]
-    Rigidbody m_Rb;
+    private Vector3 shootDirection;
 
     private IEnumerator Start()
     {
@@ -28,9 +27,19 @@ public class Rocket : MonoBehaviour
         audioSource = GetComponent<AudioSource>();   
     }
 
+    public void Setup(Vector3 shootDirection)
+    {
+        this.shootDirection = shootDirection;
+    }
+
+    private void Update()
+    {
+        transform.position += shootDirection * velocity * Time.deltaTime;
+    }
+
     void OnCollisionEnter(Collision collision)
     {
-        /*Target Enemy = collision.gameObject.GetComponent<Target>();
+        Entity Enemy = collision.gameObject.GetComponent<Entity>();
         if (Enemy != null)
         {
             Enemy.TakeDamage(ExplosionDamage);
@@ -41,11 +50,12 @@ public class Rocket : MonoBehaviour
         Collider[] objectsInRange = Physics.OverlapSphere(transform.position, ExplosionRadius);
         foreach (Collider hit in objectsInRange)
         {
-            PlayerMovement player = hit.GetComponent<PlayerMovement>();
+            QuakeMovement player = hit.GetComponent<QuakeMovement>();
             if (player != null)
             {
                 // Apply knockback force to player if they are in explosion radius
                 player.Knockback(player.transform.position - transform.position, ExplosionForce);
+                Destroy(gameObject);
             }
             else
             {
@@ -56,7 +66,7 @@ public class Rocket : MonoBehaviour
                     {
                         if (raycast.collider == hit)
                         {
-                            Target TargetHit = hit.GetComponent<Target>();
+                            Entity TargetHit = hit.GetComponent<Entity>();
                             if (TargetHit != null)
                             {
                                 float proximity = (transform.position - TargetHit.transform.position).magnitude;
@@ -71,7 +81,8 @@ public class Rocket : MonoBehaviour
                                 // else, take splash damage
                                 else
                                 {
-                                    TargetHit.TakeDamage(ExplosionDamage * effect);
+                                    int actualDamage =  Mathf.RoundToInt(ExplosionDamage * effect);
+                                    TargetHit.TakeDamage(actualDamage);
                                 }
 
                                 StartCoroutine(playAudio(ExplosionSound));
@@ -79,21 +90,27 @@ public class Rocket : MonoBehaviour
                             }
                             else
                             {
-                                Rigidbody rb = hit.GetComponent<Rigidbody>();
-                                rb.AddExplosionForce(ExplosionForce, transform.position, ExplosionRadius, ExplosionUpwardsForce);
                                 StartCoroutine(playAudio(ExplosionSound));
                                 Destroy(gameObject);
                             }
                         }
                     }
                 }
+                else
+                {
+                    StartCoroutine(playAudio(ExplosionSound));
+                    Destroy(gameObject);
+                }
             }
-        }*/
+        }
     }
 
     public IEnumerator playAudio(AudioClip soundEffect)
     {
-        AudioSource.PlayClipAtPoint(soundEffect, transform.position);
+        if(soundEffect)
+        {
+            AudioSource.PlayClipAtPoint(soundEffect, transform.position);
+        }
         yield break;
     }
 

@@ -22,6 +22,11 @@ public class Weapon : MonoBehaviour
     public string ammoTag;
     public string weaponName;
 
+    public enum damageType { bullet, explosive, energy};
+    [SerializeField]
+    damageType currentDamageType;
+
+
     [SerializeField]
     public GameObject impactEffect = null;
 
@@ -47,6 +52,7 @@ public class Weapon : MonoBehaviour
             if (currentAmmo > 0)
             {
                 shootElapsed = 0.0f;
+                Debug.Log("ReadyToFIre");
                 Fire();
             }
         }
@@ -72,9 +78,14 @@ public class Weapon : MonoBehaviour
 
     }
 
+    public virtual void HandleDamage(Entity entity)
+    {
+        entity.TakeDamage(damage);
+    }
+
     public void GetAmmoType()
     {
-       /* switch (ammoTag)
+        /*switch (ammoTag)
         {
             case "bullet":
                 m_CurrentAmmo = m_playerStats.bullets;
