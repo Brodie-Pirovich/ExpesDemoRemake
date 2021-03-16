@@ -4,14 +4,11 @@ using UnityEngine;
 
 public class Railgun : Weapon
 {
-    public float beamDuration;
-    private LineRenderer laserLine;
     public Transform gunEnd;
 
     public override void Fire()
     {
         laserLine = GetComponent<LineRenderer>();
-        StartCoroutine(ShotEffect());
 
         RaycastHit hit;
         Vector3 startPont = weaponCamera.ViewportToWorldPoint(new Vector3(0.5f, 0.5f, 0f));
@@ -28,11 +25,11 @@ public class Railgun : Weapon
             Debug.Log(hit.transform.name);
             Debug.DrawRay(startPont, fireRotation * Vector3.forward * hit.distance, Color.green, 2, false);
 
-            /*Entity target = hit.transform.GetComponent<Entity>();
+            Entity target = hit.transform.GetComponent<Entity>();
             if (target != null)
             {
                 target.TakeDamage(damage);
-            }*/
+            }
 
             TakeAmmo(1);
             PlayFireEffects(hit);
@@ -51,23 +48,5 @@ public class Railgun : Weapon
 
         /*GameObject impactGO = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
         Destroy(impactGO, 1f);*/
-    }
-
-    private IEnumerator ShotEffect()
-    {
-        // Play the shooting sound effect
-        if (audioSource)
-        {
-            audioSource.Play();
-        }
-
-        // Turn on our line renderer
-        laserLine.enabled = true;
-
-        //Wait for .07 seconds
-        yield return beamDuration;
-
-        // Deactivate our line renderer after waiting
-        laserLine.enabled = false;
     }
 }

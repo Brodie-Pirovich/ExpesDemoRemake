@@ -18,6 +18,9 @@ public class Player : MonoBehaviour
     public float rockets = 0;
     public float cells = 0;
     public float slugs = 0;
+    public enum ammotype { bullets, shells, rockets, cells, slugs};
+    [SerializeField]
+    public ammotype currentWeaponAmmo;
 
     [Header("Keys")]
     public bool b_hasBlue = false;
@@ -167,5 +170,27 @@ public class Player : MonoBehaviour
     public void ShowKeyUI()
     {
 
+    }
+
+    public void UpdateAmmoCounter()
+    {
+        switch(currentWeaponAmmo)
+        {
+            case ammotype.bullets:
+                ammoText.text = bullets.ToString();
+                break;
+            case ammotype.shells:
+                ammoText.text = shells.ToString();
+                break;
+            case ammotype.rockets:
+                ammoText.text = rockets.ToString();
+                break;
+            case ammotype.cells:
+                ammoText.text = cells.ToString();
+                break;
+            case ammotype.slugs:
+                ammoText.text = slugs.ToString();
+                break;
+        }
     }
 }

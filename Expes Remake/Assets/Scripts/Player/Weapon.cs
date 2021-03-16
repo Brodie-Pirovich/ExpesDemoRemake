@@ -12,6 +12,9 @@ public class Weapon : MonoBehaviour
 
     private float shootElapsed;
 
+    [SerializeField]
+    public Texture ammo_image;
+
     [Header("Weapon Stats")]
     private float shootDelayed;
     public float shotsPerMinute;
@@ -21,18 +24,21 @@ public class Weapon : MonoBehaviour
     public int currentAmmo;
     public string ammoTag;
     public string weaponName;
+    public float nextTimeToFire;
 
     public enum damageType { bullet, explosive, energy};
     [SerializeField]
     damageType currentDamageType;
 
-
     [SerializeField]
     public GameObject impactEffect = null;
 
-
     [SerializeField]
     public Player m_playerStats;
+
+    public LineRenderer laserLine;
+
+    public float beamDuration;
 
     // Start is called before the first frame update
     void Awake()
@@ -44,16 +50,18 @@ public class Weapon : MonoBehaviour
     void Update()
     {
         shootElapsed += Time.deltaTime;
-        //Debug.Log(shootElapsed);
         GetAmmoType();
 
-        if (Input.GetButton("Fire1") && shootElapsed >= shootDelayed)
+        if (Input.GetButton("Fire1") && Time.time >= nextTimeToFire)
         {
+            nextTimeToFire = Time.time + shootDelayed;
+
             if (currentAmmo > 0)
             {
-                shootElapsed = 0.0f;
+                ///shootElapsed = 0.0f;
                 Debug.Log("ReadyToFIre");
                 Fire();
+                StartCoroutine(ShotEffect());
             }
         }
 
@@ -124,6 +132,27 @@ public class Weapon : MonoBehaviour
             case "slugs":
                 m_playerStats.slugs -= amount;
                 break;
+        }
+    }
+
+    private IEnumerator ShotEffect()
+    {
+        // Play the shooting sound effect
+        if (audioSource)
+        {
+            audioSource.Play();
+        }
+        
+        if(laserLine != null)
+        {
+            // Turn on our line renderer
+            laserLine.enabled = true;
+
+            WaitForSeconds lineDuration = new WaitForSeconds(beamDuration);
+            yield return lineDuration;
+
+            // Deactivate our line renderer after waiting
+            laserLine.enabled = false;
         }
     }
 }

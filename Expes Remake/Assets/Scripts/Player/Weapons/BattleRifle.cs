@@ -38,11 +38,11 @@ public class BattleRifle : Weapon
             {
                 Debug.DrawRay(startPont, fireRotation * Vector3.forward * hit.distance, Color.green, 2, false);
 
-                /*Target target = hit.transform.GetComponent<Target>();
+                Entity target = hit.transform.GetComponent<Entity>();
                 if (target != null)
                 {
                     target.TakeDamage(damage);
-                }*/
+                }
                 TakeAmmo(1);
                 PlayFireEffects(hit);
             }
